@@ -1,0 +1,67 @@
+<svg width="1200" height="630" xmlns="http://www.w3.org/2000/svg">
+  <!-- Fondo degradado -->
+  <defs>
+    <linearGradient id="bgGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#667eea;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#764ba2;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="logoGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#ff6b6b;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#feca57;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  
+  <!-- Fondo -->
+  <rect width="1200" height="630" fill="url(#bgGradient)"/>
+  
+  <!-- Elementos decorativos -->
+  <circle cx="100" cy="100" r="50" fill="rgba(255,255,255,0.1)"/>
+  <circle cx="1100" cy="530" r="80" fill="rgba(255,255,255,0.1)"/>
+  <circle cx="200" cy="500" r="30" fill="rgba(255,255,255,0.1)"/>
+  <circle cx="1000" cy="150" r="40" fill="rgba(255,255,255,0.1)"/>
+  
+  <!-- Logo principal -->
+  <rect x="450" y="150" width="300" height="150" rx="20" fill="#e74c3c"/>
+  <text x="600" y="240" font-family="Arial, sans-serif" font-size="48" font-weight="bold" fill="white" text-anchor="middle">MONYMON</text>
+  
+  <!-- Título -->
+  <text x="600" y="350" font-family="Arial, sans-serif" font-size="42" font-weight="bold" fill="url(#logoGradient)" text-anchor="middle">Mini Juego RPG para Telegram</text>
+  
+  <!-- Subtítulo -->
+  <text x="600" y="400" font-family="Arial, sans-serif" font-size="24" fill="white" text-anchor="middle" opacity="0.9">¡Entrena criaturas mágicas y conviértete en el mejor!</text>
+  
+  <!-- Monstruos -->
+  <!-- Firemon -->
+  <circle cx="350" cy="500" r="40" fill="#e74c3c"/>
+  <circle cx="335" cy="485" r="6" fill="white"/>
+  <circle cx="365" cy="485" r="6" fill="white"/>
+  <circle cx="335" cy="485" r="3" fill="black"/>
+  <circle cx="365" cy="485" r="3" fill="black"/>
+  <path d="M 325 515 Q 350 525 375 515" stroke="black" stroke-width="2" fill="none"/>
+  <text x="350" y="560" font-family="Arial, sans-serif" font-size="16" fill="white" text-anchor="middle">Firemon</text>
+  
+  <!-- Watermon -->
+  <circle cx="600" cy="500" r="40" fill="#3498db"/>
+  <circle cx="585" cy="485" r="6" fill="white"/>
+  <circle cx="615" cy="485" r="6" fill="white"/>
+  <circle cx="585" cy="485" r="3" fill="black"/>
+  <circle cx="615" cy="485" r="3" fill="black"/>
+  <path d="M 575 515 Q 600 525 625 515" stroke="black" stroke-width="2" fill="none"/>
+  <text x="600" y="560" font-family="Arial, sans-serif" font-size="16" fill="white" text-anchor="middle">Watermon</text>
+  
+  <!-- Leafmon -->
+  <circle cx="850" cy="500" r="40" fill="#27ae60"/>
+  <circle cx="835" cy="485" r="6" fill="white"/>
+  <circle cx="865" cy="485" r="6" fill="white"/>
+  <circle cx="835" cy="485" r="3" fill="black"/>
+  <circle cx="865" cy="485" r="3" fill="black"/>
+  <path d="M 825 515 Q 850 525 875 515" stroke="black" stroke-width="2" fill="none"/>
+  <text x="850" y="560" font-family="Arial, sans-serif" font-size="16" fill="white" text-anchor="middle">Leafmon</text>
+  
+  <!-- Características -->
+  <text x="100" y="580" font-family="Arial, sans-serif" font-size="18" fill="white">🎮 Combate por turnos</text>
+  <text x="350" y="580" font-family="Arial, sans-serif" font-size="18" fill="white">🏆 Sistema de puntuación</text>
+  <text x="650" y="580" font-family="Arial, sans-serif" font-size="18" fill="white">📱 Optimizado para móviles</text>
+  <text x="950" y="580" font-family="Arial, sans-serif" font-size="18" fill="white">🤖 Integrado con Telegram</text>
+</svg>
+

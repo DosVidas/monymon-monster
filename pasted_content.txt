@@ -1,0 +1,114 @@
+Quiero crear un mini juego HTML5 que se pueda integrar dentro de Telegram utilizando la plataforma Game Bot. 
+
+Objetivo:
+- Crear un juego visual y jugable con Phaser 3 (o motor similar) y conectarlo a un bot de Telegram.
+
+Fases del desarrollo:
+
+### Fase 1: Diseño Inicial y Setup
+1. Genera un esqueleto básico de juego en HTML5 con Phaser 3.
+2. El juego debe funcionar en navegadores móviles dentro del WebView de Telegram.
+3. Debe mostrar un texto o pantalla de bienvenida.
+
+### Fase 2: Mecánica básica estilo Pokémon pero llamado Monymon
+Aquí te muestro cómo vamos a estructurarlo:
+
+🎮 Mecánica inicial (v1)
+🎯 Objetivo:
+Personaje puede moverse por un pequeño mapa.
+
+Puede elegir un monstruo inicial.
+
+Encuentra o se topa con NPCs para combatir por turnos.
+
+🧱 Paso a paso
+✅ Paso 1: Crear mapa y movimiento
+Tilemap sencillo (tipo RPG clásico).
+
+Movimiento con teclas (o toques en pantalla).
+
+Colisiones con obstáculos.
+
+✅ Paso 2: Selección de monstruo inicial
+Al inicio, se muestra una pantalla donde eliges entre 3 criaturas.
+
+✅ Paso 3: Sistema de combate por turnos
+Ataque / defensa con texto o efectos simples.
+
+Barra de vida y texto animado tipo RPG clásico.
+
+✅ Paso 4: Integración ligera con Telegram (luego se extiende)
+Guardar el monstruo elegido y puntaje.
+
+Eventualmente multijugador o score vía Telegram API.
+
+Un pequeño mapa (tilemap) con movimiento del personaje.
+
+Una pantalla inicial de selección de monstruo (ficticios).
+
+Combate simple con un NPC al entrar en una zona de pelea.
+
+me gustaría que:
+
+El estilo sea tipo pixel-art clásico
+
+Use assets temporales (dibujos simples), o tienes algún pack gráfico en mente
+
+El juego empiece con la selección del monstruo y luego entre al mapa
+
+Con eso te genero la primera versión jugable.
+
+### Fase 3: Sistema de Puntajes
+7. Añade un sistema de puntuación y pantalla de “Game Over”.
+8. Permite enviar el puntaje al bot de Telegram usando `Telegram.WebApp.sendData()` o mediante backend.
+
+### Fase 4: Integración con Telegram
+9. Explica cómo registrar el juego en @BotFather.
+10. Muestra cómo usar `sendGame`, `setGameScore`, `getGameHighScores` usando el token del bot.
+11. Da ejemplos en cURL o Python para manejar puntajes.
+
+### Fase 5: Publicación
+12. Proporciona opciones gratuitas para alojar el juego en HTTPS (Netlify, Vercel, etc.).
+13. Incluye instrucciones para subir el juego.
+14. Asegúrate de que se adapta a pantallas móviles.
+
+Extras (opcionales):
+- Incluir sonido o música.
+- Guardar estado local.
+- Agregar tabla de clasificación con la API del bot.
+
+Entrega en formato:
+- Código HTML+JS completo
+- Archivos de assets si aplica
+- Guía técnica para deploy e integración
+Selección inicial entre tres monstruos (firemon, watermon, leafmon).
+
+🧍‍♂️ Movimiento del personaje por el mapa con flechas.
+
+🧱 Estilo visual pixel-art con gráficos temporales desde Imgur.
+
+🔜 Siguientes pasos recomendados
+🛡️ 1. Añadir zonas de combate y combate por turnos
+Cuando el jugador entra en una zona específica, se inicia una batalla.
+
+Batalla por turnos simple: atacar, recibir daño, ver HP.
+
+🧭 2. Añadir un mapa tileado real (con colisiones)
+Usar tilemaps JSON + tileset para crear un mundo más interesante.
+
+Podemos usar assets gratuitos como Mapas de RPG de itch.io
+
+👾 3. Mostrar al monstruo elegido acompañando al jugador
+Que el monstruo se muestre junto al jugador (como en Pokémon).
+
+Opcional: animaciones simples de idle y ataque.
+
+📦 Pack de assets gratuito recomendado (pixel-art RPG)
+Pack recomendado: Tiny RPG - Kenney.nl
+
+Incluye tilesets, personajes, objetos, batallas.
+
+Estilo pixel-art, 100% gratuito y listo para Phaser.
+
+Objetivo final:
+Tener un juego listo para enviar por un bot de Telegram y jugarlo dentro de la app.

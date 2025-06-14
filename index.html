@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Monymon - Mini Juego RPG para Telegram</title>
+    <meta name="description" content="¡Juega Monymon, un emocionante juego RPG donde capturas y entrenas criaturas mágicas! Compite con amigos y sube en la tabla de clasificación.">
+    <meta name="keywords" content="monymon, juego, rpg, telegram, phaser, html5, criaturas, pokemon">
+    <meta name="author" content="Manus AI">
+    
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://monymon.netlify.app/">
+    <meta property="og:title" content="Monymon - Mini Juego RPG para Telegram">
+    <meta property="og:description" content="¡Juega Monymon, un emocionante juego RPG donde capturas y entrenas criaturas mágicas!">
+    <meta property="og:image" content="https://monymon.netlify.app/assets/monymon-preview.png">
+
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image">
+    <meta property="twitter:url" content="https://monymon.netlify.app/">
+    <meta property="twitter:title" content="Monymon - Mini Juego RPG para Telegram">
+    <meta property="twitter:description" content="¡Juega Monymon, un emocionante juego RPG donde capturas y entrenas criaturas mágicas!">
+    <meta property="twitter:image" content="https://monymon.netlify.app/assets/monymon-preview.png">
+    
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            font-family: 'Arial', sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            color: white;
+        }
+        
+        .container {
+            text-align: center;
+            max-width: 600px;
+            padding: 40px 20px;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 20px;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+        }
+        
+        .logo {
+            width: 200px;
+            height: 100px;
+            background: #e74c3c;
+            margin: 0 auto 30px;
+            border-radius: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            font-weight: bold;
+            color: white;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+        }
+        
+        h1 {
+            font-size: 3em;
+            margin: 20px 0;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+            background: linear-gradient(45deg, #ff6b6b, #feca57);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .subtitle {
+            font-size: 1.2em;
+            margin-bottom: 30px;
+            opacity: 0.9;
+        }
+        
+        .play-button {
+            display: inline-block;
+            padding: 15px 40px;
+            background: linear-gradient(45deg, #ff6b6b, #ee5a24);
+            color: white;
+            text-decoration: none;
+            border-radius: 50px;
+            font-size: 1.3em;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(238, 90, 36, 0.4);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        
+        .play-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(238, 90, 36, 0.6);
+        }
+        
+        .features {
+            margin-top: 40px;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 20px;
+        }
+        
+        .feature {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 20px;
+            border-radius: 15px;
+            backdrop-filter: blur(5px);
+        }
+        
+        .feature-icon {
+            font-size: 2em;
+            margin-bottom: 10px;
+        }
+        
+        .feature-title {
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        
+        .feature-desc {
+            font-size: 0.9em;
+            opacity: 0.8;
+        }
+        
+        .footer {
+            margin-top: 40px;
+            padding-top: 20px;
+            border-top: 1px solid rgba(255, 255, 255, 0.2);
+            font-size: 0.9em;
+            opacity: 0.7;
+        }
+        
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 2em;
+            }
+            
+            .container {
+                margin: 20px;
+                padding: 30px 15px;
+            }
+            
+            .features {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        /* Animaciones */
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+        }
+        
+        .logo {
+            animation: float 3s ease-in-out infinite;
+        }
+        
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .container > * {
+            animation: fadeInUp 0.8s ease-out forwards;
+        }
+        
+        .container > *:nth-child(2) { animation-delay: 0.1s; }
+        .container > *:nth-child(3) { animation-delay: 0.2s; }
+        .container > *:nth-child(4) { animation-delay: 0.3s; }
+        .container > *:nth-child(5) { animation-delay: 0.4s; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="logo">MONYMON</div>
+        
+        <h1>¡Bienvenido a Monymon!</h1>
+        
+        <p class="subtitle">
+            Un emocionante juego RPG donde entrenas criaturas mágicas.<br>
+            ¡Explora, lucha y conviértete en el mejor entrenador!
+        </p>
+        
+        <a href="monymon-complete.html" class="play-button">🎮 Jugar Ahora</a>
+        
+        <div class="features">
+            <div class="feature">
+                <div class="feature-icon">🔥</div>
+                <div class="feature-title">3 Monstruos Únicos</div>
+                <div class="feature-desc">Firemon, Watermon y Leafmon</div>
+            </div>
+            
+            <div class="feature">
+                <div class="feature-icon">⚔️</div>
+                <div class="feature-title">Combate por Turnos</div>
+                <div class="feature-desc">Estrategia y acción</div>
+            </div>
+            
+            <div class="feature">
+                <div class="feature-icon">🏆</div>
+                <div class="feature-title">Sistema de Puntuación</div>
+                <div class="feature-desc">Compite por el mejor puntaje</div>
+            </div>
+            
+            <div class="feature">
+                <div class="feature-icon">📱</div>
+                <div class="feature-title">Optimizado para Móviles</div>
+                <div class="feature-desc">Juega en cualquier dispositivo</div>
+            </div>
+        </div>
+        
+        <div class="footer">
+            <p>🤖 Integrado con Telegram | 🌐 Desarrollado con Phaser 3</p>
+            <p>v1.0 - Creado por Manus AI</p>
+        </div>
+    </div>
+    
+    <script>
+        // Redirección automática después de 5 segundos si no se hace clic
+        setTimeout(() => {
+            if (!document.hidden) {
+                window.location.href = 'monymon-complete.html';
+            }
+        }, 10000);
+        
+        // Analytics básicos
+        if (typeof gtag !== 'undefined') {
+            gtag('event', 'page_view', {
+                page_title: 'Monymon Landing Page',
+                page_location: window.location.href
+            });
+        }
+    </script>
+</body>
+</html>
+

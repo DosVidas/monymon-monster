@@ -1,0 +1,11 @@
+# Redirects para URLs amigables
+/jugar              /monymon-complete.html    200
+/game               /monymon-complete.html    200
+/play               /monymon-complete.html    200
+
+# Redirecciones para compatibilidad
+/monymon            /monymon-complete.html    200
+
+# 404 personalizado (opcional)
+/*                  /index.html               404
+

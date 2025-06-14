@@ -1,0 +1,75 @@
+[build]
+  publish = "."
+  command = ""
+
+[build.environment]
+  NODE_ENV = "production"
+
+# Redirects para URLs amigables
+[[redirects]]
+  from = "/jugar"
+  to = "/monymon-complete.html"
+  status = 200
+
+[[redirects]]
+  from = "/game"
+  to = "/monymon-complete.html"
+  status = 200
+
+[[redirects]]
+  from = "/play"
+  to = "/monymon-complete.html"
+  status = 200
+
+# Headers de seguridad y performance
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Frame-Options = "SAMEORIGIN"
+    X-Content-Type-Options = "nosniff"
+    X-XSS-Protection = "1; mode=block"
+    Referrer-Policy = "strict-origin-when-cross-origin"
+    Permissions-Policy = "geolocation=(), microphone=(), camera=()"
+
+[[headers]]
+  for = "*.html"
+  [headers.values]
+    Cache-Control = "public, max-age=3600"
+
+[[headers]]
+  for = "*.js"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000"
+
+[[headers]]
+  for = "*.css"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000"
+
+[[headers]]
+  for = "*.png"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000"
+
+[[headers]]
+  for = "*.jpg"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000"
+
+[[headers]]
+  for = "*.svg"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000"
+
+# Configuración para diferentes contextos
+[context.production.environment]
+  NODE_ENV = "production"
+  TELEGRAM_BOT_TOKEN = ""
+
+[context.deploy-preview.environment]
+  NODE_ENV = "staging"
+  TELEGRAM_BOT_TOKEN = ""
+
+[context.branch-deploy.environment]
+  NODE_ENV = "development"
+

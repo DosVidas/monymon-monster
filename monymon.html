@@ -1,0 +1,595 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Monymon - Mini Juego para Telegram</title>
+    <script src="https://cdn.jsdelivr.net/npm/phaser@3.70.0/dist/phaser.min.js"></script>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background: #000;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            font-family: Arial, sans-serif;
+        }
+        
+        #game-container {
+            border: 2px solid #333;
+            border-radius: 8px;
+        }
+        
+        canvas {
+            display: block;
+            max-width: 100%;
+            height: auto;
+        }
+    </style>
+</head>
+<body>
+    <div id="game-container"></div>
+    
+    <script>
+        // Funciones utilitarias globales
+        const MonymonUtils = {
+            createPixelText: function(scene, x, y, text, size = 24, color = '#ffffff') {
+                return scene.add.text(x, y, text, {
+                    fontSize: size + 'px',
+                    fill: color,
+                    fontFamily: 'monospace',
+                    stroke: '#000000',
+                    strokeThickness: 2
+                }).setOrigin(0.5);
+            },
+            
+            createButton: function(scene, x, y, width, height, text, callback) {
+                const button = scene.add.rectangle(x, y, width, height, 0x3498db)
+                    .setStrokeStyle(2, 0x2980b9)
+                    .setInteractive()
+                    .on('pointerdown', callback)
+                    .on('pointerover', function() {
+                        this.setFillStyle(0x5dade2);
+                    })
+                    .on('pointerout', function() {
+                        this.setFillStyle(0x3498db);
+                    });
+                    
+                const buttonText = MonymonUtils.createPixelText(scene, x, y, text, 18, '#ffffff');
+                
+                return { button, text: buttonText };
+            }
+        };
+
+        // Datos globales del juego
+        const gameData = {
+            selectedMonster: null,
+            playerName: 'Entrenador',
+            score: 0,
+            level: 1
+        };
+
+        // Escena de bienvenida
+        class WelcomeScene extends Phaser.Scene {
+            constructor() {
+                super({ key: 'WelcomeScene' });
+            }
+            
+            preload() {
+                // Crear logo simple
+                this.load.image('logo', 'data:image/svg+xml;base64,' + btoa(`
+                    <svg width="200" height="100" xmlns="http://www.w3.org/2000/svg">
+                        <rect width="200" height="100" fill="#e74c3c"/>
+                        <text x="100" y="35" font-family="monospace" font-size="24" fill="white" text-anchor="middle">MONYMON</text>
+                        <text x="100" y="65" font-family="monospace" font-size="12" fill="white" text-anchor="middle">Mini Juego RPG</text>
+                        <text x="100" y="85" font-family="monospace" font-size="10" fill="white" text-anchor="middle">Para Telegram</text>
+                    </svg>
+                `));
+            }
+            
+            create() {
+                const centerX = this.cameras.main.width / 2;
+                const centerY = this.cameras.main.height / 2;
+                
+                // Fondo
+                this.add.rectangle(centerX, centerY, this.cameras.main.width, this.cameras.main.height, 0x2c3e50);
+                
+                // Logo
+                const logo = this.add.image(centerX, centerY - 100, 'logo');
+                logo.setScale(1.5);
+                
+                // Título
+                const title = MonymonUtils.createPixelText(this, centerX, centerY + 50, '¡Bienvenido a Monymon!', 32, '#e74c3c');
+                
+                // Subtítulo
+                MonymonUtils.createPixelText(this, centerX, centerY + 90, 'Un mundo de criaturas te espera', 18, '#ecf0f1');
+                
+                // Instrucciones
+                const instructions = MonymonUtils.createPixelText(this, centerX, centerY + 130, 'Toca para comenzar tu aventura', 16, '#95a5a6');
+                
+                // Botón de inicio
+                MonymonUtils.createButton(
+                    this, 
+                    centerX, 
+                    centerY + 180, 
+                    200, 
+                    50, 
+                    'COMENZAR',
+                    () => {
+                        this.scene.start('MonsterSelectScene');
+                    }
+                );
+                
+                // Animaciones
+                this.tweens.add({
+                    targets: title,
+                    scaleX: 1.1,
+                    scaleY: 1.1,
+                    duration: 1000,
+                    yoyo: true,
+                    repeat: -1,
+                    ease: 'Sine.easeInOut'
+                });
+                
+                this.tweens.add({
+                    targets: instructions,
+                    alpha: 0.5,
+                    duration: 1500,
+                    yoyo: true,
+                    repeat: -1,
+                    ease: 'Sine.easeInOut'
+                });
+                
+                // Información de versión
+                MonymonUtils.createPixelText(this, centerX, this.cameras.main.height - 30, 'v1.0 - Hecho para Telegram', 12, '#7f8c8d');
+                
+                // Hacer toda la pantalla clickeable
+                this.input.on('pointerdown', () => {
+                    this.scene.start('MonsterSelectScene');
+                });
+            }
+        }
+
+        // Escena de selección de monstruo
+        class MonsterSelectScene extends Phaser.Scene {
+            constructor() {
+                super({ key: 'MonsterSelectScene' });
+                this.monsters = [
+                    {
+                        id: 'firemon',
+                        name: 'Firemon',
+                        type: 'Fuego',
+                        color: 0xe74c3c,
+                        hp: 100,
+                        attack: 25,
+                        defense: 15,
+                        description: 'Un monstruo ardiente con gran poder de ataque'
+                    },
+                    {
+                        id: 'watermon',
+                        name: 'Watermon', 
+                        type: 'Agua',
+                        color: 0x3498db,
+                        hp: 120,
+                        attack: 20,
+                        defense: 20,
+                        description: 'Un monstruo acuático con buena defensa'
+                    },
+                    {
+                        id: 'leafmon',
+                        name: 'Leafmon',
+                        type: 'Planta',
+                        color: 0x27ae60,
+                        hp: 110,
+                        attack: 22,
+                        defense: 18,
+                        description: 'Un monstruo natural con estadísticas balanceadas'
+                    }
+                ];
+                this.selectedIndex = 0;
+            }
+            
+            preload() {
+                // Crear sprites para los monstruos
+                this.monsters.forEach(monster => {
+                    this.load.image(monster.id, 'data:image/svg+xml;base64,' + btoa(`
+                        <svg width="120" height="120" xmlns="http://www.w3.org/2000/svg">
+                            <circle cx="60" cy="60" r="50" fill="#${monster.color.toString(16).padStart(6, '0')}"/>
+                            <circle cx="45" cy="45" r="8" fill="white"/>
+                            <circle cx="75" cy="45" r="8" fill="white"/>
+                            <circle cx="45" cy="45" r="4" fill="black"/>
+                            <circle cx="75" cy="45" r="4" fill="black"/>
+                            <path d="M 40 75 Q 60 85 80 75" stroke="black" stroke-width="3" fill="none"/>
+                            <text x="60" y="105" font-family="monospace" font-size="12" fill="black" text-anchor="middle">${monster.name}</text>
+                        </svg>
+                    `));
+                });
+            }
+            
+            create() {
+                const centerX = this.cameras.main.width / 2;
+                const centerY = this.cameras.main.height / 2;
+                
+                // Fondo
+                this.add.rectangle(centerX, centerY, this.cameras.main.width, this.cameras.main.height, 0x34495e);
+                
+                // Título
+                MonymonUtils.createPixelText(this, centerX, 50, 'Elige tu Monymon inicial', 28, '#ecf0f1');
+                
+                // Crear las cartas de monstruos
+                this.monsterCards = [];
+                const cardWidth = 200;
+                const cardSpacing = 220;
+                const startX = centerX - cardSpacing;
+                
+                this.monsters.forEach((monster, index) => {
+                    const cardX = startX + (index * cardSpacing);
+                    const cardY = centerY;
+                    
+                    // Carta del monstruo
+                    const card = this.add.rectangle(cardX, cardY, cardWidth, 280, 0x2c3e50)
+                        .setStrokeStyle(3, index === this.selectedIndex ? 0xf39c12 : 0x7f8c8d)
+                        .setInteractive()
+                        .on('pointerdown', () => this.selectMonster(index));
+                    
+                    // Sprite del monstruo
+                    const sprite = this.add.image(cardX, cardY - 60, monster.id).setScale(0.8);
+                    
+                    // Información del monstruo
+                    const name = MonymonUtils.createPixelText(this, cardX, cardY + 20, monster.name, 20, '#ecf0f1');
+                    const type = MonymonUtils.createPixelText(this, cardX, cardY + 45, `Tipo: ${monster.type}`, 14, '#95a5a6');
+                    const stats = MonymonUtils.createPixelText(this, cardX, cardY + 70, 
+                        `HP: ${monster.hp}\\nATK: ${monster.attack}\\nDEF: ${monster.defense}`, 12, '#bdc3c7');
+                    
+                    this.monsterCards.push({
+                        card, sprite, name, type, stats, monster, index
+                    });
+                });
+                
+                // Descripción
+                this.descriptionText = MonymonUtils.createPixelText(this, centerX, centerY + 180, 
+                    this.monsters[this.selectedIndex].description, 16, '#ecf0f1');
+                this.descriptionText.setWordWrapWidth(600);
+                
+                // Botón de confirmación
+                MonymonUtils.createButton(
+                    this,
+                    centerX,
+                    centerY + 230,
+                    180,
+                    45,
+                    'CONFIRMAR',
+                    () => this.confirmSelection()
+                );
+                
+                // Controles
+                this.cursors = this.input.keyboard.createCursorKeys();
+                this.updateSelection();
+            }
+            
+            update() {
+                if (Phaser.Input.Keyboard.JustDown(this.cursors.left)) {
+                    this.selectedIndex = Math.max(0, this.selectedIndex - 1);
+                    this.updateSelection();
+                } else if (Phaser.Input.Keyboard.JustDown(this.cursors.right)) {
+                    this.selectedIndex = Math.min(this.monsters.length - 1, this.selectedIndex + 1);
+                    this.updateSelection();
+                } else if (Phaser.Input.Keyboard.JustDown(this.cursors.space)) {
+                    this.confirmSelection();
+                }
+            }
+            
+            selectMonster(index) {
+                this.selectedIndex = index;
+                this.updateSelection();
+            }
+            
+            updateSelection() {
+                this.monsterCards.forEach((card, index) => {
+                    if (index === this.selectedIndex) {
+                        card.card.setStrokeStyle(3, 0xf39c12);
+                    } else {
+                        card.card.setStrokeStyle(3, 0x7f8c8d);
+                    }
+                });
+                
+                this.descriptionText.setText(this.monsters[this.selectedIndex].description);
+            }
+            
+            confirmSelection() {
+                const selectedMonster = this.monsters[this.selectedIndex];
+                gameData.selectedMonster = selectedMonster;
+                
+                // Efecto de confirmación
+                const card = this.monsterCards[this.selectedIndex];
+                this.tweens.add({
+                    targets: [card.card, card.sprite, card.name, card.type, card.stats],
+                    scaleX: 1.2,
+                    scaleY: 1.2,
+                    duration: 300,
+                    yoyo: true,
+                    ease: 'Back.easeOut',
+                    onComplete: () => {
+                        this.scene.start('GameScene');
+                    }
+                });
+            }
+        }
+
+        // Escena principal del juego
+        class GameScene extends Phaser.Scene {
+            constructor() {
+                super({ key: 'GameScene' });
+                this.player = null;
+                this.npcs = [];
+                this.playerSpeed = 160;
+                this.isInBattle = false;
+            }
+            
+            preload() {
+                // Crear sprites simples
+                this.load.image('player', 'data:image/svg+xml;base64,' + btoa(`
+                    <svg width="32" height="32" xmlns="http://www.w3.org/2000/svg">
+                        <circle cx="16" cy="12" r="8" fill="#f39c12"/>
+                        <rect x="12" y="16" width="8" height="12" fill="#3498db"/>
+                        <rect x="10" y="20" width="4" height="8" fill="#e67e22"/>
+                        <rect x="18" y="20" width="4" height="8" fill="#e67e22"/>
+                        <circle cx="13" cy="10" r="1" fill="black"/>
+                        <circle cx="19" cy="10" r="1" fill="black"/>
+                    </svg>
+                `));
+                
+                this.load.image('npc', 'data:image/svg+xml;base64,' + btoa(`
+                    <svg width="32" height="32" xmlns="http://www.w3.org/2000/svg">
+                        <circle cx="16" cy="12" r="8" fill="#e74c3c"/>
+                        <rect x="12" y="16" width="8" height="12" fill="#8e44ad"/>
+                        <rect x="10" y="20" width="4" height="8" fill="#2c3e50"/>
+                        <rect x="18" y="20" width="4" height="8" fill="#2c3e50"/>
+                        <circle cx="13" cy="10" r="1" fill="black"/>
+                        <circle cx="19" cy="10" r="1" fill="black"/>
+                        <text x="16" y="35" font-family="monospace" font-size="8" fill="red" text-anchor="middle">!</text>
+                    </svg>
+                `));
+                
+                this.load.image('grass', 'data:image/svg+xml;base64,' + btoa(`
+                    <svg width="32" height="32" xmlns="http://www.w3.org/2000/svg">
+                        <rect width="32" height="32" fill="#27ae60"/>
+                        <rect x="0" y="0" width="16" height="16" fill="#2ecc71"/>
+                        <rect x="16" y="16" width="16" height="16" fill="#2ecc71"/>
+                    </svg>
+                `));
+            }
+            
+            create() {
+                const centerX = this.cameras.main.width / 2;
+                const centerY = this.cameras.main.height / 2;
+                
+                // Crear mapa simple
+                this.createMap();
+                
+                // Crear jugador
+                this.player = this.physics.add.sprite(centerX, centerY, 'player');
+                this.player.setCollideWorldBounds(true);
+                this.player.body.setSize(24, 24);
+                
+                // Crear NPCs
+                this.createNPCs();
+                
+                // Controles
+                this.cursors = this.input.keyboard.createCursorKeys();
+                this.wasd = this.input.keyboard.addKeys('W,S,A,D');
+                
+                // Cámara
+                this.cameras.main.startFollow(this.player);
+                this.cameras.main.setZoom(1.5);
+                
+                // UI
+                this.createUI();
+                
+                // Colisiones
+                this.physics.add.overlap(this.player, this.npcs, this.startBattle, null, this);
+                
+                // Mensaje de bienvenida
+                this.showMessage(`¡Bienvenido! Tu ${gameData.selectedMonster.name} te acompaña en esta aventura.`);
+            }
+            
+            createMap() {
+                const mapWidth = 25;
+                const mapHeight = 19;
+                const tileSize = 32;
+                
+                // Fondo de césped
+                for (let x = 0; x < mapWidth; x++) {
+                    for (let y = 0; y < mapHeight; y++) {
+                        this.add.image(x * tileSize + 16, y * tileSize + 16, 'grass');
+                    }
+                }
+                
+                this.physics.world.setBounds(0, 0, mapWidth * tileSize, mapHeight * tileSize);
+            }
+            
+            createNPCs() {
+                const npcPositions = [
+                    { x: 200, y: 150 },
+                    { x: 450, y: 300 },
+                    { x: 600, y: 200 }
+                ];
+                
+                npcPositions.forEach((pos, index) => {
+                    const npc = this.physics.add.sprite(pos.x, pos.y, 'npc');
+                    npc.setCollideWorldBounds(true);
+                    npc.body.setSize(24, 24);
+                    npc.npcId = index;
+                    npc.defeated = false;
+                    this.npcs.push(npc);
+                });
+            }
+            
+            createUI() {
+                this.uiContainer = this.add.container(0, 0);
+                this.uiContainer.setScrollFactor(0);
+                
+                const uiBackground = this.add.rectangle(10, 10, 200, 80, 0x2c3e50, 0.8);
+                uiBackground.setOrigin(0, 0);
+                
+                const monster = gameData.selectedMonster;
+                this.monsterNameText = this.add.text(20, 20, monster.name, {
+                    fontSize: '16px',
+                    fill: '#ecf0f1',
+                    fontFamily: 'monospace'
+                });
+                
+                this.monsterHPText = this.add.text(20, 40, `HP: ${monster.hp}/${monster.hp}`, {
+                    fontSize: '14px',
+                    fill: '#e74c3c',
+                    fontFamily: 'monospace'
+                });
+                
+                this.scoreText = this.add.text(20, 60, `Puntuación: ${gameData.score}`, {
+                    fontSize: '14px',
+                    fill: '#f39c12',
+                    fontFamily: 'monospace'
+                });
+                
+                this.uiContainer.add([uiBackground, this.monsterNameText, this.monsterHPText, this.scoreText]);
+            }
+            
+            update() {
+                if (this.isInBattle) return;
+                
+                this.player.setVelocity(0);
+                
+                if (this.cursors.left.isDown || this.wasd.A.isDown) {
+                    this.player.setVelocityX(-this.playerSpeed);
+                } else if (this.cursors.right.isDown || this.wasd.D.isDown) {
+                    this.player.setVelocityX(this.playerSpeed);
+                }
+                
+                if (this.cursors.up.isDown || this.wasd.W.isDown) {
+                    this.player.setVelocityY(-this.playerSpeed);
+                } else if (this.cursors.down.isDown || this.wasd.S.isDown) {
+                    this.player.setVelocityY(this.playerSpeed);
+                }
+            }
+            
+            startBattle(player, npc) {
+                if (this.isInBattle || npc.defeated) return;
+                
+                this.isInBattle = true;
+                npc.defeated = true;
+                
+                this.player.setVelocity(0);
+                this.cameras.main.shake(200, 0.02);
+                
+                this.showBattleSequence(npc);
+            }
+            
+            showBattleSequence(npc) {
+                const monster = gameData.selectedMonster;
+                
+                const battleOverlay = this.add.rectangle(
+                    this.cameras.main.centerX,
+                    this.cameras.main.centerY,
+                    this.cameras.main.width,
+                    this.cameras.main.height,
+                    0x000000,
+                    0.8
+                ).setScrollFactor(0);
+                
+                const battleText = this.add.text(
+                    this.cameras.main.centerX,
+                    this.cameras.main.centerY - 50,
+                    `¡${monster.name} vs Monymon Salvaje!`,
+                    {
+                        fontSize: '24px',
+                        fill: '#ffffff',
+                        fontFamily: 'monospace'
+                    }
+                ).setOrigin(0.5).setScrollFactor(0);
+                
+                this.time.delayedCall(1500, () => {
+                    battleText.setText(`${monster.name} usa Ataque!`);
+                });
+                
+                this.time.delayedCall(3000, () => {
+                    battleText.setText('¡Victoria!');
+                    gameData.score += 100;
+                    this.scoreText.setText(`Puntuación: ${gameData.score}`);
+                });
+                
+                this.time.delayedCall(4500, () => {
+                    battleOverlay.destroy();
+                    battleText.destroy();
+                    this.isInBattle = false;
+                    
+                    npc.setTint(0x666666);
+                    npc.setAlpha(0.5);
+                });
+            }
+            
+            showMessage(text) {
+                const messageBox = this.add.rectangle(
+                    this.cameras.main.centerX,
+                    this.cameras.main.height - 80,
+                    this.cameras.main.width - 40,
+                    60,
+                    0x2c3e50,
+                    0.9
+                ).setScrollFactor(0);
+                
+                const messageText = this.add.text(
+                    this.cameras.main.centerX,
+                    this.cameras.main.height - 80,
+                    text,
+                    {
+                        fontSize: '16px',
+                        fill: '#ecf0f1',
+                        fontFamily: 'monospace',
+                        wordWrap: { width: this.cameras.main.width - 80 }
+                    }
+                ).setOrigin(0.5).setScrollFactor(0);
+                
+                this.time.delayedCall(4000, () => {
+                    messageBox.destroy();
+                    messageText.destroy();
+                });
+            }
+        }
+
+        // Configuración del juego
+        const config = {
+            type: Phaser.AUTO,
+            width: 800,
+            height: 600,
+            parent: 'game-container',
+            backgroundColor: '#2c3e50',
+            scale: {
+                mode: Phaser.Scale.FIT,
+                autoCenter: Phaser.Scale.CENTER_BOTH,
+                min: {
+                    width: 320,
+                    height: 240
+                },
+                max: {
+                    width: 800,
+                    height: 600
+                }
+            },
+            physics: {
+                default: 'arcade',
+                arcade: {
+                    gravity: { y: 0 },
+                    debug: false
+                }
+            },
+            scene: [WelcomeScene, MonsterSelectScene, GameScene]
+        };
+        
+        // Inicializar el juego
+        const game = new Phaser.Game(config);
+    </script>
+</body>
+</html>
+

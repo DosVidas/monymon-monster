@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Monymon - Test</title>
+    <script src="https://cdn.jsdelivr.net/npm/phaser@3.70.0/dist/phaser.min.js"></script>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background: #000;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            font-family: Arial, sans-serif;
+        }
+        
+        #game-container {
+            border: 2px solid #333;
+            border-radius: 8px;
+        }
+    </style>
+</head>
+<body>
+    <div id="game-container"></div>
+    
+    <script>
+        // Escena de prueba simple
+        class TestScene extends Phaser.Scene {
+            constructor() {
+                super({ key: 'TestScene' });
+            }
+            
+            create() {
+                const centerX = this.cameras.main.width / 2;
+                const centerY = this.cameras.main.height / 2;
+                
+                // Fondo
+                this.add.rectangle(centerX, centerY, this.cameras.main.width, this.cameras.main.height, 0x2c3e50);
+                
+                // Texto de prueba
+                this.add.text(centerX, centerY, '¡Monymon funciona!', {
+                    fontSize: '32px',
+                    fill: '#ffffff',
+                    fontFamily: 'Arial'
+                }).setOrigin(0.5);
+                
+                // Botón de prueba
+                const button = this.add.rectangle(centerX, centerY + 100, 200, 50, 0x3498db)
+                    .setInteractive()
+                    .on('pointerdown', () => {
+                        this.add.text(centerX, centerY + 200, 'Botón presionado!', {
+                            fontSize: '20px',
+                            fill: '#f39c12',
+                            fontFamily: 'Arial'
+                        }).setOrigin(0.5);
+                    });
+                
+                this.add.text(centerX, centerY + 100, 'CLICK AQUÍ', {
+                    fontSize: '16px',
+                    fill: '#ffffff',
+                    fontFamily: 'Arial'
+                }).setOrigin(0.5);
+            }
+        }
+        
+        // Configuración del juego
+        const config = {
+            type: Phaser.AUTO,
+            width: 800,
+            height: 600,
+            parent: 'game-container',
+            backgroundColor: '#2c3e50',
+            scale: {
+                mode: Phaser.Scale.FIT,
+                autoCenter: Phaser.Scale.CENTER_BOTH
+            },
+            scene: TestScene
+        };
+        
+        // Inicializar el juego
+        const game = new Phaser.Game(config);
+    </script>
+</body>
+</html>
+
