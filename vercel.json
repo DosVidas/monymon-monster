@@ -11,26 +11,26 @@
       "use": "@vercel/static"
     }
   ],
-  "routes": [
+  "rewrites": [
     {
-      "src": "/jugar",
-      "dest": "/monymon-complete.html"
+      "source": "/jugar",
+      "destination": "/monymon-complete.html"
     },
     {
-      "src": "/game",
-      "dest": "/monymon-complete.html"
+      "source": "/game",
+      "destination": "/monymon-complete.html"
     },
     {
-      "src": "/play",
-      "dest": "/monymon-complete.html"
+      "source": "/play",
+      "destination": "/monymon-complete.html"
     },
     {
-      "src": "/monymon",
-      "dest": "/monymon-complete.html"
+      "source": "/monymon",
+      "destination": "/monymon-complete.html"
     },
     {
-      "src": "/(.*)",
-      "dest": "/$1"
+      "source": "/(.*)",
+      "destination": "/$1"
     }
   ],
   "headers": [
@@ -69,4 +69,3 @@
     "NODE_ENV": "production"
   }
 }
-
